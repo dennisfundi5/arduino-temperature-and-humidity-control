@@ -1,0 +1,122 @@
+
+// include the library code:
+#include <LiquidCrystal.h>
+#include "DHT.h"
+
+// set the DHT Pin
+#define DHTPIN 9
+
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+//humidity control points
+#define SETPOINT 65.0
+#define setpoint 40.0
+
+//to read the code easily
+
+#define FAN 13 //instead of using 9 for pin 9 we call it HUMIDIFIER
+#define BULB 8
+#define ON false //the relay is sort of backwards. A low/0/fal se output is actually ON
+#define OFF true //"    "    "    "              . A hight/1/true output is actually OFF
+
+//The setup routine only excutes once when the arduino is powered on
+
+void setup() {
+  Serial.begin(9600);
+  //Tell the arduino that we will use the HUMIDIFIER PIN as an output, and set it off to
+  pinMode(FAN, OUTPUT);
+  digitalWrite(FAN, OFF);
+  
+  pinMode(BULB, OUTPUT);
+  digitalWrite(BULB, OFF);
+  
+  // set up the LCD's number of columns and rows: 
+  lcd.begin(16, 2);
+  //Start the code for the temp/humidity sensor. Libs have a .begin or .start routine of some kind
+  dht.begin();
+  
+  //Setup the stuff that never changes on the screen
+  lcd.clear();
+  //Go to the character zero on line zero
+  lcd.setCursor(0,0);
+  // Print a message to the LCD.
+  lcd.print("Temp:  " " Humidity:");
+
+  //Go to character zero on line one
+  lcd.setCursor(0,1);
+
+}
+//the loop routine excutes over and over until you unplug the arduino
+void loop() {
+  delay(10000);
+  //reading the temp and humidity into floating point variables
+  // set the cursor to column 0, line 1
+  // (note: line 1 is the second row, since counting begins with 0):
+  lcd.setCursor(0, 1);
+  // read humidity
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    lcd.clear();
+    lcd.print("ERROR");
+    return;
+  }
+   lcd.print(t);
+  lcd.setCursor(10,7);
+  lcd.print(h);  
+  //Bail - we cannot work with things that are not numbers!
+    //Move the cursor to the end of the word Temperature: and print the reading to 2 decimal places
+  lcd.setCursor(10,7);
+  lcd.print(t,2);
+  lcd.setCursor(10,7);
+  lcd.print(h);  
+  //Bail - we cannot work with things that are not numbers!
+    //Move the cursor to the end of the word Humidity: and print the reading to 2 decimal places
+  lcd.setCursor(10,7);
+  lcd.print(h,2);
+  //Now begin the control logic
+  if (digitalRead(BULB) == ON)
+
+   {
+      //If the humdifier is on, check to see if the humidity is above setpoint
+      if(t > setpoint);
+      {
+        //We have reached the upper limit, so kill the humidifier
+        digitalWrite(BULB, OFF);
+      }
+   }
+   else
+   {
+      //If the humidifier is off, check to see if the humidity is below setpoint
+      if(t < setpoint)
+      {
+         //we have reached the lowerlimit, so kick on the humidifier
+         digitalWrite(BULB, ON);
+      }
+   }
+  if (digitalRead(FAN) == ON)
+
+   {
+      //If the humdifier is on, check to see if the humidity is above setpoint
+      if(h > SETPOINT);
+      {
+        //We have reached the upper limit, so kill the humidifier
+        digitalWrite(FAN, OFF);
+      }
+   }
+   else
+   {
+      //If the humidifier is off, check to see if the humidity is below setpoint
+      if(h < SETPOINT)
+      {
+         //we have reached the lowerlimit, so kick on the humidifier
+         digitalWrite(HUMIDIFIER, ON);
+      }
+   }
+  
+  return;
+}
