@@ -17,7 +17,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 //to read the code easily
 
-#define FAN 13 //instead of using 9 for pin 9 we call it HUMIDIFIER
+#define HUMIDIFIER 13 //instead of using  for pin 13 we call it HUMIDIFIER
 #define BULB 8
 #define ON false //the relay is sort of backwards. A low/0/fal se output is actually ON
 #define OFF true //"    "    "    "              . A hight/1/true output is actually OFF
@@ -26,12 +26,12 @@ DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   Serial.begin(9600);
-  //Tell the arduino that we will use the HUMIDIFIER PIN as an output, and set it off to
-  pinMode(FAN, OUTPUT);
-  digitalWrite(FAN, OFF);
+  //Tell the arduino that we will use the HUMIDIFIER(FAN) PIN as an output, and set it off to
+  pinMode(HUMIDIFIER, OUTPUT);
+  digitalWrite(HUMIDIFIER, OFF);
   
-  pinMode(BULB, OUTPUT);
-  digitalWrite(BULB, OFF);
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, OFF);
   
   // set up the LCD's number of columns and rows: 
   lcd.begin(16, 2);
@@ -82,7 +82,7 @@ void loop() {
   if (digitalRead(BULB) == ON)
 
    {
-      //If the humdifier is on, check to see if the humidity is above setpoint
+      //If the BULB is on, check to see if the temperature is above setpoint
       if(t > setpoint);
       {
         //We have reached the upper limit, so kill the humidifier
@@ -91,21 +91,21 @@ void loop() {
    }
    else
    {
-      //If the humidifier is off, check to see if the humidity is below setpoint
+      //If the humidifier is off, check to see if the temperature is below setpoint
       if(t < setpoint)
       {
-         //we have reached the lowerlimit, so kick on the humidifier
+         //we have reached the lowerlimit, so light the bulb on
          digitalWrite(BULB, ON);
       }
    }
-  if (digitalRead(FAN) == ON)
+  if (digitalRead(HUMIDIFIER) == ON)
 
    {
       //If the humdifier is on, check to see if the humidity is above setpoint
       if(h > SETPOINT);
       {
         //We have reached the upper limit, so kill the humidifier
-        digitalWrite(FAN, OFF);
+        digitalWrite(HUMIDIFIER, OFF);
       }
    }
    else
@@ -120,3 +120,10 @@ void loop() {
   
   return;
 }
+
+
+  
+
+
+      
+   
